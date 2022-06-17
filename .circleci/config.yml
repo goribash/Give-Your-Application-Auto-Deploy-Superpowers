@@ -154,8 +154,8 @@ jobs:
            aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --output text >> ~/Give-Your-Application-Auto-Deploy-Superpowers/.circleci/ansible/inventory.txt
-            cat ~/Give-Your-Application-Auto-Deploy-Superpowers/.circleci/ansible/inventory.txt
+            --output text >> ~/project/.circleci/ansible/inventory.txt
+            cat ~/project/.circleci/ansible/inventory.txt
       - run:
           name: Save backend URL and IP (for ansible)
           command: |
@@ -171,8 +171,8 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - Give-Your-Application-Auto-Deploy-Superpowers/.circleci/outputs/backend_url.txt
-            - Give-Your-Application-Auto-Deploy-Superpowers/.circleci/ansible/inventory.txt
+            - project/.circleci/outputs/backend_url.txt
+            - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure 
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
