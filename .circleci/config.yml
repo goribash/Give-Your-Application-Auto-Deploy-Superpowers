@@ -2,10 +2,6 @@ version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@1.3.0
 
-parameters:
-  workflow-id:
-    type: string
-    default: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 commands:
   dependencies:
@@ -197,7 +193,8 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure 
       - destroy-environment
-         
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
 
   configure-infrastructure:
     docker:
@@ -272,6 +269,8 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
       - revert-migrations
                   
   deploy-backend:
@@ -301,6 +300,7 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations
       # Here's where you will add some code to rollback on failure  
 
