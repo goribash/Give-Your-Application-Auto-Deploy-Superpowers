@@ -271,7 +271,7 @@ jobs:
                   
   deploy-backend:
     docker:
-      # Docker image here that supports Ansible
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - add_ssh_keys:
