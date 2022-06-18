@@ -2,7 +2,6 @@ version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@1.3.0
 
-
 commands:
   dependencies:
     steps:
@@ -178,7 +177,7 @@ jobs:
           name: Save backend URL and IP (for ansible)
           command: |
             BACKEND_AWS_PUBLIC_IP=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-prod-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
             echo "http://$BACKEND_AWS_PUBLIC_IP:3030" >> .circleci/outputs/backend_url.txt
@@ -193,7 +192,6 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure 
       - destroy-environment
-
 
   configure-infrastructure:
     docker:
