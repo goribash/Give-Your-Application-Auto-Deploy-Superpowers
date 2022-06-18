@@ -23,11 +23,11 @@ version: 2.1
 #             sudo apt install ansible
 
 
-  destroy-environment:
-    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-    parameters:
-      workflow_id:
-        type: string 
+destroy-environment:
+  description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+  parameters:
+    workflow_id:
+      type: string 
     steps:
       - run:
           name: Destroy environments
