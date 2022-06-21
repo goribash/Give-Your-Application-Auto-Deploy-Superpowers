@@ -262,7 +262,6 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout 
-      - install_nodejs
       - restore_cache:
          keys: [frontend-build]
       - attach_workspace:
