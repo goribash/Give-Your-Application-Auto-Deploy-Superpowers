@@ -3,30 +3,42 @@ orbs:
   aws-cli: circleci/aws-cli@1.3.0
 
 commands:
-  
-  dependencies:
+  install_awscli:
+    description: Install AWS CLI v2
     steps:
       - run:
-          name: Installing necessary packages
+          name: Install AWS CLI v2
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+
+  install_ansible:
+    description: Install Ansible
+    steps:
+      - run:
+          name: Install Ansible
           command: |
             sudo apt update
-            sudo apt install -y tar gzip curl software-properties-common
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update curl nodejs npm
-            pip install awscli
-      - run:
-          name: Installing ansible
-          command: |
+            sudo apt install software-properties-common -y
             sudo add-apt-repository --yes --update ppa:ansible/ansible
-            sudo apt install ansible
+            sudo apt install ansible -y
+
+  install_nodejs:
+    description: Install Node.js 13
+    steps:
+      - run:
+          name: Install Node.js 13
+          command: |
+            curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+            sudo apt install -y nodejs
 
   destroy_environment:
     description: Destroy backend and frontend cloudformation stacks given a workflow ID.
     parameters:
       workflow_id:
         type: string
+        workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
     steps:
       - run:
           name: Destroy environments
@@ -44,9 +56,12 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            cd ~/project/backend
-            if [[ -f "~/project/.circleci/outputs/db_migration_success" ]]; then
-              npm i
+            SUCCESS=$(curl --insecure  https://kvdb.io/9GLkfTAh2ovuP7LBUFN59i/migration_<< parameters.Workflow_ID >>)
+            # Logic for reverting the database state
+            if (( $SUCCESS == 1 ));
+            then
+              cd ~/project/backend
+              npm install
               npm run migration:revert
             fi
             
@@ -145,6 +160,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - install_awscli
       - run:
           name: Install tar utility
           command: |
@@ -191,31 +207,26 @@ jobs:
             - project/.circleci/outputs/backend_url.txt
             - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure 
-      - destroy_environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy_environment
 
   configure-infrastructure:
     docker:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
+      - install_awscli
+      - install_ansible
       - add_ssh_keys:
           fingerprints: ["88:f0:2d:01:d2:e5:ba:f8:dc:3d:3b:53:e1:2c:6a:1d"]
       - attach_workspace:
           at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible
-            pip3 install awscli
       - run:
           name: Configure server
           command: |
             cat ~/project/.circleci/ansible/inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml     
-      - destroy_environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"     
+      - destroy_environment
       # Here's where you will add some code to rollback on failure      
 
   run-migrations:
@@ -241,7 +252,7 @@ jobs:
                   curl https://kvdb.io/9GLkfTAh2ovuP7LBUFN59i/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
               fi
            
-      - destroy_environment:
+      - destroy_environment
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
       - revert-migrations
 
@@ -250,9 +261,17 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout 
+      - install_awscli
+      - install_nodejs
+      - restore_cache:
+         keys: [frontend-build]
       - attach_workspace:
           at: ~/
-      - dependencies
+      - run:
+        name: Install dependencies
+        command: |
+          cd frontend
+          npm install
       - run:
           name: Get backend url
           command: |
@@ -272,8 +291,7 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      - destroy_environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      - destroy_environment
       - revert-migrations
                   
   deploy-backend:
@@ -302,8 +320,7 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - destroy_environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      - destroy_environment
       - revert-migrations
       # Here's where you will add some code to rollback on failure  
 
