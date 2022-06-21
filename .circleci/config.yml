@@ -152,7 +152,6 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - install_awscli
       - run:
           name: Install tar utility
           command: |
@@ -206,7 +205,6 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
-      - install_awscli
       - install_ansible
       - add_ssh_keys:
           fingerprints: ["88:f0:2d:01:d2:e5:ba:f8:dc:3d:3b:53:e1:2c:6a:1d"]
@@ -226,7 +224,6 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
-      - install_awscli
       # - restore_cache:
       #     keys:
       #       - build-backend
@@ -252,7 +249,6 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout 
-      - install_awscli
       - install_nodejs
       - restore_cache:
          keys: [frontend-build]
