@@ -3,11 +3,11 @@ version: 2.1
 commands:
   dependencies:
     steps:
-      - run:
-          name: Installing necessary packages
-          command: |
-            sudo apt update
-            sudo apt install -y tar gzip curl software-properties-common
+      # - run:
+      #     name: Installing necessary packages
+      #     command: |
+      #       sudo apt update
+      #       sudo apt install -y tar gzip curl software-properties-common
       - run:
           name: Installing aws-cli
           command: |
