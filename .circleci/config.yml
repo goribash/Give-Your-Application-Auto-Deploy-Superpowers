@@ -1,20 +1,25 @@
 version: 2.1
 
 commands:
-  install_ansible:
-    description: Install Ansible
+  dependencies:
     steps:
       - run:
-          name: Install Ansible
+          name: Installing necessary packages
           command: |
             sudo apt update
-            sudo apt install software-properties-common -y
+            sudo apt install -y tar gzip curl software-properties-common
+      - run:
+          name: Installing aws-cli
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+      - run:
+          name: Installing ansible
+          command: |
             sudo add-apt-repository --yes --update ppa:ansible/ansible
-            sudo apt install ansible -y
+            sudo apt install ansible
 
-  install_nodejs:
-    description: Install Node.js 13
-    steps:
       - run:
           name: Install Node.js 13
           command: |
@@ -152,10 +157,11 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run:
-          name: Install tar utility
-          command: |
-            yum install -y tar gzip
+      - dependencies
+      # - run:
+      #     name: Install tar utility
+      #     command: |
+      #       yum install -y tar gzip
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -210,6 +216,14 @@ jobs:
           fingerprints: ["88:f0:2d:01:d2:e5:ba:f8:dc:3d:3b:53:e1:2c:6a:1d"]
       - attach_workspace:
           at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add curl
+            apk add --upgrade bash
+            apk add --update ansible
+            apk add openssh-client
+            pip3 install awscli
       - run:
           name: Configure server
           command: |
