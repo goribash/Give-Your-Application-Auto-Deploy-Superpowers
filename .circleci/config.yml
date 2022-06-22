@@ -311,6 +311,7 @@ jobs:
       - run:
           name: Deploy backend
           command: |
+            ls ~/project/.circleci/ansible/roles/deploy_backend/files/
             cd backend
             npm i
             npm run build
