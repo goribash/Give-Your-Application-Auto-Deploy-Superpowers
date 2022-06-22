@@ -278,11 +278,7 @@ jobs:
             export API_URL=`cat .circleci/outputs/backend_url.txt`
             echo "API_URL: $API_URL"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-            cat frontend/.env
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/frontend/dist    
+            cat frontend/.env   
       - run:
           name: Deploy frontend objects
           command: |
@@ -296,7 +292,7 @@ jobs:
                   
   deploy-backend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
