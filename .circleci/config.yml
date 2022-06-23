@@ -39,7 +39,7 @@ commands:
           command: |
             echo "Destroying environment: <<parameters.workflow_id>> "
             aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.workflow_id>>
-            aws s3 rm s3://udapeople-prod-<<parameters.workflow_id>> --recursive
+            aws s3 rm s3://udapeople-<<parameters.workflow_id>> --recursive
             aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.workflow_id>>
   
   revert-migrations:
@@ -337,7 +337,7 @@ jobs:
       - run:
           name: Smoke test for back end
           command: |
-            export API_URL="http://${BACKEND_IP}:3030"
+            export API_URL="http://${BACKEND_AWS_PUBLIC_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
             then
@@ -346,8 +346,7 @@ jobs:
                 return 1
             fi
       - destroy_environment
-      - revert-migrations
-     
+      - revert-migrations     
 
   smoke-test-frontend:
     docker:
