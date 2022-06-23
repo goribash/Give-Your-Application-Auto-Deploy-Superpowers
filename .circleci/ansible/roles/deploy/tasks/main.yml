@@ -1,36 +1,28 @@
----
-- name: "Creates backend app directory"
-  file:
-    path: ~/backend_app
-    state: directory
+- name: "update apt packages."
+  apt:
+    update_cache: yes
 
-- name: "Copy compiled backend app"
-  copy:
-    src: dist.zip
-    dest: "~/backend_app/dist.zip"
+- name: "upgrade packages"
+  apt:
+    upgrade: yes
 
-- name: "Unzip backend files to correct directory"
+- name: remove dependencies that are no longer required
+  apt:
+    autoremove: yes
+
+- name: install node
   shell: |
-    cd ~/backend_app
-    unzip dist.zip
-    rm -rf dist.zip
+    curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash - && sudo apt-get install -y nodejs
+- name: "Install zip utility."
+  apt:
+    name: [ "zip", "unzip" ]
+    state: latest
+    update_cache: yes
 
-- name: "Install dependencies for project"
-  shell: |
-    cd ~/backend_app
-    npm install
+- name: "install pm2"
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
 
-- name: "Executing node"
-  shell: |
-    export
-    cd ~/backend_app
-    pm2 start main.js
-  register: execute_node
-
-- name: print message
-  debug:
-    msg: "{{ execute_node.stdout_lines }}"
-
-- name: "Configure pm2 to start as service"
-  shell: |
-    env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
