@@ -366,12 +366,7 @@ jobs:
             API_URL=`cat .circleci/outputs/backend_url.txt`
             echo $API_URL
             curl -s $API_URL/api/status
-            if curl "${API_URL}/api/status" | grep "ok"
-            then
-                return 0
-            else
-                return 1
-            fi
+
       # - destroy_environment
       # - revert-migrations     
 
