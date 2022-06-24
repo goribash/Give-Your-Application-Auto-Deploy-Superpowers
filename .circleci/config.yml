@@ -350,7 +350,7 @@ jobs:
 
   smoke-test-backend:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: sleavely/node-awscli:14.x
     steps:
       - checkout
       - attach_workspace:
@@ -370,7 +370,8 @@ jobs:
               return 0
             else
               return 1
-            fi         
+            fi
+         
       - destroy_environment
       - revert-migrations     
 
