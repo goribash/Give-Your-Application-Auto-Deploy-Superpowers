@@ -362,7 +362,7 @@ jobs:
       - run:
           name: Smoke test for back end
           command: |            
-            backendIP=`cat ./.circleci/outputs/backend_url.txt`
+            backendIP=`cat ./.circleci/ansible/inventory.txt`
             echo $backendIP
             sleep 20
             URL="http://$backendIP:3030/api/status"
