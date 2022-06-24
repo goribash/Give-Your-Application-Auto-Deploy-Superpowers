@@ -365,7 +365,7 @@ jobs:
             backendIP=`cat ./.circleci/outputs/backend_url.txt`
             echo $backendIP
             sleep 20
-            URL="http://$backendIP/api/status"
+            URL="$backendIP/api/status"
             echo $URL
             curl -s $URL
       
