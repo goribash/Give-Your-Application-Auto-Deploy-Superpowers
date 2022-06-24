@@ -363,7 +363,7 @@ jobs:
       - run:
           name: Smoke test for back end
           command: |
-            API_URL=`cat /project/.circleci/outputs/backend_url.txt`
+            API_URL=`cat ~/project/.circleci/ansible/inventory.txt`
             echo $API_URL
             curl  "$API_URL/api/status"
 
