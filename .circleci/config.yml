@@ -365,7 +365,7 @@ jobs:
           command: |            
             API_URL=`cat .circleci/outputs/backend_url.txt`
             echo $API_URL
-            if curl -s "${API_URL}/api/status
+            if curl -s ${API_URL}/api/status
             then
               return 0
             else
@@ -383,7 +383,8 @@ jobs:
   #     - run:
   #         name: Install dependencies
   #         command: |
-  #           # your code here
+  #           yum -y install tar 
+  #           yum -y install gzip
   #     - run:
   #         name: Update cloudfront distribution
   #         command: |
