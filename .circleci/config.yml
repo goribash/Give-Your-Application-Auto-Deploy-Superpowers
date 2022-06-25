@@ -362,12 +362,15 @@ jobs:
       - run:
           name: Smoke test for back end
           command: |            
-            backendIP=`cat ./.circleci/outputs/backend_url.txt`
-            echo $backendIP
-            sleep 20
-            URL="$backendIP/api/status"
-            echo $URL
-            curl -s $URL
+            API_URL=`cat ./.circleci/outputs/backend_url.txt`
+            echo "$API_URL"
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+                return 0
+            else
+                return 1
+            fi
+
       
       - destroy_environment
       - revert-migrations     
