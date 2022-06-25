@@ -362,15 +362,8 @@ jobs:
       - run:
           name: Smoke test for back end
           command: |            
-            export API_URL=`cat ./.circleci/outputs/backend_url.txt`
-            echo "$API_URL"
-            if curl "${API_URL}/api/status" | grep "ok"
-            then
-                return 0
-            else
-                return 1
-            fi
-
+            BACKEND_IP= `cat ./.circleci/ansible/inventory.txt`
+            curl "http://${BACKEND_IP}:3030/api/status"
       
       - destroy_environment
       - revert-migrations     
