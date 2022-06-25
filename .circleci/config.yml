@@ -361,9 +361,18 @@ jobs:
             pip install awscli
       - run:
           name: Smoke test for back end
-          command: |            
-            BACKEND_IP= `cat ./.circleci/ansible/inventory.txt`
-            curl "http://${BACKEND_IP}:3030/api/status"
+          command: |
+            export BACKEND_IP=$(aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+                return 0
+            else
+                return 1
+            fi
       
       - destroy_environment
       - revert-migrations     
