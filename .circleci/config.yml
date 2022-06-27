@@ -275,15 +275,15 @@ jobs:
       #       cd frontend
       #       npm install
       - run:
-        name: Install dependencies
-        command: |
-          sudo apt update && sudo apt upgrade
-          sudo apt-get install python python-pip 
-          sudo pip install awscli 
-          python -m pip install --user ansible
-          npm install
-          sudo apt-get install curl
-          sudo apt-get install tar gzip
+          name: Install dependencies
+          command: |
+            sudo apt update && sudo apt upgrade
+            sudo apt-get install python python-pip 
+            sudo pip install awscli 
+            python -m pip install --user ansible
+            npm install
+            sudo apt-get install curl
+            sudo apt-get install tar gzip
       - run:
           name: Get backend url
           command: |
