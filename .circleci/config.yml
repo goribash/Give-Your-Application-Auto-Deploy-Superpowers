@@ -352,8 +352,8 @@ jobs:
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      - attach_workspace:
-          at: ~/
+      # - attach_workspace:
+      #     at: ~/
             # apk add --update curl
             # pip install awscli
       - checkout
@@ -371,12 +371,18 @@ jobs:
       - run:
           name: Smoke test for back end
           command: |
-            backendIP=`cat ./.circleci/ansible/inventory.txt`
-            echo $backendIP
-            sleep 20
-            URL="http://$backendIP:3030/api/status"
-            echo $URL
-            curl -s $URL
+            export BACKEND_IP=$(aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+                return 0
+            else
+                return 1
+            fi
       
       - destroy_environment
       - revert-migrations     
