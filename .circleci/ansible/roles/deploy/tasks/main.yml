@@ -1,44 +1,22 @@
 ---
-- name: "install dependencies."
-  become: true
-  apt:
-    name: ["nodejs", "npm"]
-    state: latest
-    update_cache: yes
-
-- name: "install pm2"
-  become: true
-  npm:
-    name: pm2
-    global: yes
-    production: yes
-    state: present
-
-- name: Creates directory
+- name: "Creates backend app directory"
   file:
-    path: ~/backend
+    path: ~/backend-app
     state: directory
-    mode: 0755
 
-- name: Extract artifact.tar.gz into ~/backend
-  ansible.builtin.unarchive:
-    src: ~/project/artifact.tar.gz
-    dest: ~/backend
+- name: "Unarchive backend files"
+  unarchive:
+    src: artifact.tar.gz
+    dest: ~/backend-app
 
-- name: install npm & switch to 13.8.0 to build
-  become: true
+- name: "Installing Node Dependencies"
   shell: |
-    cd /home/ubuntu/backend
-    npm install -g n
-    n 13.8.0
-    chown -R ubuntu:ubuntu /home/ubuntu/backend
-- name: build
-  shell: |
-    cd /home/ubuntu/backend
-    npm install
-    npm run build
+    cd ~/backend-app
+    npm i
     
-- name: start pm2
+- name: "Executing Node app with PM2"
   shell: |
-    cd /home/ubuntu/backend    
-    pm2 start npm --name backend -- start
+    cd ~/backend-app/dist
+    pm2 stop default
+    pm2 start main.js
+  register: execute_node
