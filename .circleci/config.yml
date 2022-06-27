@@ -352,8 +352,8 @@ jobs:
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      # - attach_workspace:
-      #     at: ~/
+      - attach_workspace:
+          at: ~/
             # apk add --update curl
             # pip install awscli
       - checkout
