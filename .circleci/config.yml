@@ -352,22 +352,14 @@ jobs:
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      # - attach_workspace:
-      #     at: ~/
-            # apk add --update curl
-            # pip install awscli
+      - attach_workspace:
+          at: ~/
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apk add --no-cache \
-              curl \
-              python3 \
-              py3-pip \
-              && pip3 install --upgrade pip \
-              && pip3 install \
-              awscli \
-              && rm -rf /var/cache/apk/*
+            apk add --update curl
+            pip install awscli
       - run:
           name: Smoke test for back end
           command: |
