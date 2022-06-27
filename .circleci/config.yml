@@ -267,7 +267,7 @@ jobs:
         #  keys: 
         #    -  frontend-build
       - dependencies
-            - run:
+      - run:
           name: Install dependencies
           command: |
             sudo apt update && sudo apt upgrade
