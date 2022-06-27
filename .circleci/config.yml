@@ -260,12 +260,12 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: cimg/node:13.14.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout 
       - restore_cache:
-         keys: 
-           -  frontend-build
+        #  keys: 
+        #    -  frontend-build
       - dependencies
       # - attach_workspace:
       #     at: ~/
@@ -278,9 +278,10 @@ jobs:
           name: Get backend url
           command: |
             export API_URL=`cat .circleci/ansible/inventory.txt`
+            export  echo API_URL="http://${BACKEND_IP}:3030" 
             echo "API_URL: $API_URL"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-            cat frontend/.env   
+            cat frontend/.env
       - run:
           name: Deploy frontend objects
           command: |
@@ -288,7 +289,7 @@ jobs:
             npm i
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws s3 cp dist s3://udapeople${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy_environment
       - revert-migrations
                   
@@ -301,9 +302,9 @@ jobs:
           fingerprints: ["88:f0:2d:01:d2:e5:ba:f8:dc:3d:3b:53:e1:2c:6a:1d"]
       - attach_workspace:
           at: ~/
-      - restore_cache:
-          keys:
-            - build-backend
+      # - restore_cache:
+      #     keys:
+      #       - build-backend
       - run:
           name: Install dependencies
           command: |
@@ -391,6 +392,7 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --output text)
+            echo "BACKEND_IP=${BACKEND_IP}"
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
@@ -400,8 +402,8 @@ jobs:
                 return 1
             fi
       
-      # - destroy_environment
-      # - revert-migrations     
+      - destroy_environment
+      - revert-migrations     
 
 
   # cloudfront-update:
