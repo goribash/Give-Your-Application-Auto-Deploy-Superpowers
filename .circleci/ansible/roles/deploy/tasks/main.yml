@@ -1,34 +1,44 @@
-- name: move files
-  hosts: all
-  user: ubuntu
-  tasks:
-    - name: "copy files"
-      become: yes
-      copy: 
-        src: ../../../../dist.tar.gz
-        dest: /tmp/
-    - name: Unarchive a file that is already on the remote machine
-      unarchive:
-        src: /tmp/dist.tar.gz
-        dest: /tmp/
-        remote_src: yes
-    - name: "Set enviroment variables"
-      shell: |
-         export ENVIRONMENT=production
-         export TYPEORM_CONNECTION=postgres
-         export TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts
-         export TYPEORM_HOST={{TYPEORM_HOST}}
-         export TYPEORM_PORT={{TYPEORM_PORT}}
-         export TYPEORM_USERNAME={{TYPEORM_USERNAME}}
-         export TYPEORM_PASSWORD={{TYPEORM_PASSWORD}}
-         export TYPEORM_DATABASE={{TYPEORM_DATABASE}}
-    - name: "Confirm enviroment"
-      shell: |
-         echo TYPEORM_HOST=$TYPEORM_HOST
-         echo TYPEORM_PORT=$TYPEORM_PORT
-         echo TYPEORM_USERNAME=$TYPEORM_USERNAME
-         echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD
-         echo TYPEORM_DATABASE=$TYPEORM_DATABASE
-    - name: "run server"
-      shell: |
-         cd /tmp/backend && sudo pm2 start npm -- run "start"
+---
+- name: "install dependencies."
+  become: true
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
+
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
+
+- name: Creates directory
+  file:
+    path: ~/backend
+    state: directory
+    mode: 0755
+
+- name: Extract artifact.tar.gz into ~/backend
+  ansible.builtin.unarchive:
+    src: ~/project/artifact.tar.gz
+    dest: ~/backend
+
+- name: install npm & switch to 13.8.0 to build
+  become: true
+  shell: |
+    cd /home/ubuntu/backend
+    npm install -g n
+    n 13.8.0
+    chown -R ubuntu:ubuntu /home/ubuntu/backend
+- name: build
+  shell: |
+    cd /home/ubuntu/backend
+    npm install
+    npm run build
+    
+- name: start pm2
+  shell: |
+    cd /home/ubuntu/backend    
+    pm2 start npm --name backend -- start
