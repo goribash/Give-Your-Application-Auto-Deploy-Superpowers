@@ -3,11 +3,11 @@ version: 2.1
 commands:
   dependencies:
     steps:
-      # - run:
-      #     name: Installing necessary packages
-      #     command: |
-      #       sudo apt update
-      #       sudo apt install -y tar gzip curl software-properties-common
+      - run:
+          name: Installing necessary packages
+          command: |
+            sudo apt install software-properties-common
+            sudo apt update
       - run:
           name: Installing aws-cli
           command: |
@@ -264,19 +264,9 @@ jobs:
     steps:
       - checkout 
       # - restore_cache:
-        #  keys: 
-        #    -  frontend-build
+      #    keys: 
+      #      -  frontend-build
       - dependencies
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt update && sudo apt upgrade
-            sudo apt-get install python python-pip 
-            sudo pip install awscli 
-            python -m pip install --user ansible
-            npm install
-            sudo apt-get install curl
-            sudo apt-get install tar gzip
       # - attach_workspace:
       #     at: ~/
       # - run:
@@ -288,10 +278,10 @@ jobs:
           name: Get backend url
           command: |
             export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
-            export  echo API_URL="http://${BACKEND_IP}:3030" 
+            export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL: $API_URL"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-            cat frontend/.env
+            cat frontend/.env   
       - run:
           name: Deploy frontend objects
           command: |
@@ -299,7 +289,7 @@ jobs:
             npm i
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://udapeople${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy_environment
       - revert-migrations
                   
@@ -312,9 +302,9 @@ jobs:
           fingerprints: ["88:f0:2d:01:d2:e5:ba:f8:dc:3d:3b:53:e1:2c:6a:1d"]
       - attach_workspace:
           at: ~/
-      # - restore_cache:
-      #     keys:
-      #       - build-backend
+      - restore_cache:
+          keys:
+            - build-backend
       - run:
           name: Install dependencies
           command: |
