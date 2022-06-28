@@ -381,7 +381,7 @@ jobs:
   cleanup:
     docker:
       - image: amazon/aws-cli 
-      - checkout code from git
+      - checkout
       - run:
           name: Get old stack workflow id
           command: |
