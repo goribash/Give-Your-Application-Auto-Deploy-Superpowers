@@ -8,6 +8,7 @@ commands:
           command: |
             sudo apt install software-properties-common
             sudo apt update
+            sudo apt-add-repository ‘deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main’
       - run:
           name: Installing aws-cli
           command: |
@@ -312,9 +313,9 @@ jobs:
           fingerprints: ["88:f0:2d:01:d2:e5:ba:f8:dc:3d:3b:53:e1:2c:6a:1d"]
       - attach_workspace:
           at: ~/
-      - restore_cache:
-          keys:
-            - build-backend
+      # - restore_cache:
+      #     keys:
+      #       - build-backend
       - run:
           name: Install dependencies
           command: |
