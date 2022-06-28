@@ -244,20 +244,10 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: python:3.7-alpine3.11
     steps:
       - checkout 
-      # - restore_cache:
-      #    keys: 
-      #      -  frontend-build
-      # - dependencies
-      # - attach_workspace:
-      #     at: ~/
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       cd frontend
-      #       npm install
+    
       - run:
           name: Install dependencies
           command: |
@@ -307,7 +297,7 @@ jobs:
       - run:    
           name: Deploy backend
           command: |
-            echo ENVIRONMENT=production >> "backend/.env"
+            cd backend
             echo TYPEORM_CONNECTION=postgres >> ".env"
             echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> ".env"
             echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> ".env"
@@ -317,9 +307,6 @@ jobs:
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
-      - run:
-         name:
-         command: |
             npm i
             npm run build
             cd ..
@@ -334,6 +321,17 @@ jobs:
             # tar -C backend -czvf artifact.tar.gz .
             # cat ~/project/.circleci/ansible/inventory.txt
             # ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
+  # - restore_cache:
+      #    keys: 
+      #      -  frontend-build
+      # - dependencies
+      # - attach_workspace:
+      #     at: ~/
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       cd frontend
+      #       npm install
 
   # smoke-test-frontend:
   #   docker:
