@@ -1,12 +1,17 @@
 ---
-- name: Install Dependencies
+- name: "upgrade packages."
+  become: true
+  apt:
+    upgrade: "yes"
+
+- name: "install dependencies."
   become: true
   apt:
     name: ["nodejs", "npm"]
-    state: latest
     update_cache: yes
 
-- name: Install pm2
+
+- name: "install pm2"
   become: true
   npm:
     name: pm2
@@ -14,30 +19,34 @@
     production: yes
     state: present
 
-- name: Creates Directory
-  file:
-    path: /home/ubuntu/backend
-    state: directory
 
-- name: Copy backend dist files web server
+- name: create backend directory
+  become: yes
+  file:
+    path: ~/backend
+    state: directory
+    mode: 0755
+
+- name: copy backend files
+  become: yes
   copy:
     src: /root/project/artifact.tar.gz
-    dest: /home/ubuntu/backend/artifact.tar.gz
+    dest: /root/backend
 
-- name: Uncompress Backend
+- name: unpack backend files
+  become: yes
   shell: |
-    cd /home/ubuntu/backend
-    tar xvzf artifact.tar.gz -C .
-    ls -la
+    tar -vxf artifact.tar.gz
+    rm -f artifact.tar.gz
+  args:
+    chdir: /root/backend
 
-- name: Build
-  become: true
+- name: start app
+  become: yes
   shell: |
-    cd /home/ubuntu/backend
+    cd ~/backend
     npm install
-    npm run build
-    
-- name: Start PM2
-  shell: |
-    cd /home/ubuntu/backend
-    pm2 start npm --name backend -- start
+    pm2 stop default
+    pm2 start npm -- run start
+    cd dist
+    pm2 start main.js --update-env
