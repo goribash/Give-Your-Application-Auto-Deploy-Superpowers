@@ -322,16 +322,17 @@ jobs:
       - run: 
           name: Deploy backend
           command: |
+            cd backend
             npm i
             npm run build
+            cp package* ./dist
             cd ..
-            pwd
             tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml
-      - destroy_environment
+            ansible-playbook -i inventory.txt deploy-backend.ymll
+      # - destroy_environment
       - revert-migrations
             # tar -C backend -czvf artifact.tar.gz .
             # cat ~/project/.circleci/ansible/inventory.txt
