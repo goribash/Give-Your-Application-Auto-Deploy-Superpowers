@@ -307,7 +307,6 @@ jobs:
       - run:    
           name: Set Environment variables
           command: |
-            cd backend
             cd ./backend
             touch .env
             echo TYPEORM_CONNECTION=postgres >> "/.env"
