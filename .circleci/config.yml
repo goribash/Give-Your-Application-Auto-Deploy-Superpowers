@@ -305,9 +305,11 @@ jobs:
             /usr/local/bin/python -m pip install --upgrade pip
             pip install awscli     
       - run:    
-          name: Deploy backend
+          name: Set Environment variables
           command: |
             cd backend
+            cd ./backend
+            touch .env
             echo TYPEORM_CONNECTION=postgres >> "/.env"
             echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "/.env"
             echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "/.env"
@@ -317,6 +319,10 @@ jobs:
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "/.env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "/.env"
+      
+      - run: 
+          name: Deploy backend
+          command: |
             npm i
             npm run build
             cd ..
