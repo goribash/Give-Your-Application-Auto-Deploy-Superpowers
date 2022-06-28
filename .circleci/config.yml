@@ -251,8 +251,13 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt-get update
-            apt -y install awscli
+            sudo apt update && sudo apt upgrade
+            sudo apt-get install python python-pip 
+            sudo pip install awscli 
+            python -m pip install --user ansible
+            npm install
+            sudo apt-get install curl
+            sudo apt-get install tar gzip
       - run:
           name: Get backend url
           command: |
