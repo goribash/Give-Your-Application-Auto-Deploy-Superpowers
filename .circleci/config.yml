@@ -8,7 +8,6 @@ commands:
           command: |
             sudo apt update
             sudo apt install software-properties-common
-            sudo apt-add-repository ‘deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main’
       - run:
           name: Installing aws-cli
           command: |
