@@ -344,12 +344,21 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
+            export OldWorkflowID=$(aws cloudformation \
+               list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+               --no-paginate --output text)
+            echo $OldWorkflowID >> ~/OldWorkflowID.txt
+            cat ~/OldWorkflowID.txt
+
              aws cloudformation deploy \
                --template-file .circleci/files/cloudfront.yml \
-               --stack-name InitialStack \
+               --stack-name "InitialStack - ${OldWorkflowID}" \
                --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
                --tags project=udapeople
-         
+
+            echo OldWorkflowID: "${OldWorkflowID}"
+            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
+       
 
   cleanup:
     docker:
@@ -359,7 +368,12 @@ jobs:
       - run:
           name: Get old stack workflow id
           command: |
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            cat ~/OldWorkflowID.txt
+            OldWorkflowID=$(cat ~/OldWorkflowID.txt)
+            echo OldWorkflowID: "${OldWorkflowID}"
+            echo OldWorkflowID
+
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
               echo "------------------------Delete Confirmed------------------------"
               aws s3 rm "s3://${OldWorkflowID}" --recursive
@@ -368,7 +382,7 @@ jobs:
             else
               echo "-------------------------Cannot Cleanup-------------------------"
             fi
-    
+                
 
 
 
