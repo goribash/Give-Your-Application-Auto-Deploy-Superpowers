@@ -369,7 +369,9 @@ jobs:
       - run:
           name: Get old stack workflow id
           command: |
-            cat ~/OldWorkflowID.txt
+            export OldWorkflowID=$(aws cloudformation \
+            list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+             --no-paginate --output text)
             OldWorkflowID=$(cat ~/OldWorkflowID.txt)
             echo OldWorkflowID: "${OldWorkflowID}"
             echo $OldWorkflowID     
@@ -383,7 +385,8 @@ jobs:
             else
               echo "-------------------------Cannot Cleanup-------------------------"
             fi
-                               
+
+
 workflows:
   default:
     jobs:
