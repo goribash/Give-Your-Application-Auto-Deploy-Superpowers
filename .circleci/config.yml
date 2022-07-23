@@ -355,6 +355,12 @@ jobs:
             --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
 
+            echo OldWorkflowID: "${OldWorkflowID}"
+            echo Current Workflow Id: "${CIRCLE_WORKFLOW_ID:0:7}"
+
+            
+
+
   cleanup:
     docker:
       - image: amazon/aws-cli 
@@ -364,9 +370,9 @@ jobs:
           name: Get old stack workflow id
           command: |
             cat ~/OldWorkflowID.txt
-            OldWorkflowID=$(cat cat ~/OldWorkflowID.txt)
+            OldWorkflowID=$(cat ~/OldWorkflowID.txt)
             echo OldWorkflowID: "${OldWorkflowID}"
-            echo OldWorkflowID     
+            echo $OldWorkflowID     
 
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
