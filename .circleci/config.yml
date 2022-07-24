@@ -124,7 +124,6 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      # - dependencies
       - run: yum install -y tar gzip
       - run:
           name: Ensure back-end infrastructure exists
@@ -183,7 +182,6 @@ jobs:
 
   run-migrations:
     docker:
-      # Docker image here that supports NodeJS
       - image: circleci/node:13.8.0
     steps:
       # Checkout code from git
