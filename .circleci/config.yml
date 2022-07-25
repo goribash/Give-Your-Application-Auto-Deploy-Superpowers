@@ -334,8 +334,6 @@ jobs:
       - image: amazon/aws-cli 
     steps:
       - checkout 
-      - attach_workspace:
-          at: ~/
       - run:
           name: Install dependencies
           command: |
@@ -363,8 +361,6 @@ jobs:
       - image: amazon/aws-cli 
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/
       - run:
           name: Get old stack workflow id
           command: |
@@ -376,16 +372,12 @@ jobs:
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
               echo "------------------------Delete Confirmed------------------------"
-              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws s3 rm "s3://${OldWorkflowID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}" 
             else
               echo "-------------------------Cannot Cleanup-------------------------"
             fi
-
-
-
-
 
 workflows:
   default:
