@@ -331,7 +331,7 @@ jobs:
                   
   cloudfront-update:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: amazon/aws-cli
     steps:
       - checkout 
       - run:
@@ -345,7 +345,7 @@ jobs:
             list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
             --no-paginate --output text)
             echo $OldWorkflowID >> ~/OldWorkflowID.txt
-            cat ~/OldWorkflowID.txt
+            cat ~/project/OldWorkflowID.txt
 
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
@@ -356,14 +356,9 @@ jobs:
             echo OldWorkflowID: "${OldWorkflowID}"
             echo Current Workflow Id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/.circleci/ansible/OldWorkflowID.txt
-
   cleanup:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: amazon/aws-cli
     steps:
       - checkout
       - attach_workspace:
@@ -371,8 +366,8 @@ jobs:
       - run:
           name: Get old stack workflow id
           command: |
-            cat ~/OldWorkflowID.txt
-            OldWorkflowID=${cat ~/OldWorkflowID.txt}
+            cat ~/project/OldWorkflowID.txt
+            OldWorkflowID=${cat ~/project/OldWorkflowID.txt}
             echo OldWorkflowID: "${OldWorkflowID}"
             echo $OldWorkflowID 
 
@@ -440,4 +435,3 @@ workflows:
 #             else
 #               echo "-------------------------Cannot Cleanup-------------------------"
 #             fi
-# amazon/aws-cli
