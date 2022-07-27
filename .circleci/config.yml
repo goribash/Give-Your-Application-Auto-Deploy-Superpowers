@@ -331,7 +331,7 @@ jobs:
                   
   cloudfront-update:
     docker:
-      - image: amazon/aws-cli 
+      - image: python:3.7-alpine3.11
     steps:
       - checkout 
       - run:
@@ -363,7 +363,7 @@ jobs:
 
   cleanup:
     docker:
-      - image: amazon/aws-cli 
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - attach_workspace:
@@ -440,3 +440,4 @@ workflows:
 #             else
 #               echo "-------------------------Cannot Cleanup-------------------------"
 #             fi
+# amazon/aws-cli
