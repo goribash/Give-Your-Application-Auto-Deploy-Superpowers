@@ -364,8 +364,7 @@ jobs:
       - run:
           name: Get old stack workflow id
           command: |
-            cat ~/OldWorkflowID.txt
-            OldWorkflowID=${cat ~/OldWorkflowID.txt}
+            OldWorkflowID= $(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
             echo OldWorkflowID: "${OldWorkflowID}"
             echo $OldWorkflowID 
 
