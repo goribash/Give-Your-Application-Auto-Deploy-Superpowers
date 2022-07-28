@@ -1,0 +1,18 @@
+#  Download and Install Prometheus
+wget https://github.com/prometheus/prometheus/releases/download/v2.19.0/prometheus-2.19.0.linux-amd64.tar.gz
+# Extract tar files
+tar xvfz prometheus-2.19.0.linux-amd64.tar.gz
+# Go into folder
+cd prometheus-2.19.0.linux-amd64/
+# Prometheus Version 
+./prometheus --version
+# Go into Default installation file
+cat prometheus.yml
+# Start Prometheus 
+./prometheus --config.file=./prometheus.yml
+# URL of Prometheus Server
+ec2-44-204-155-26.compute-1.amazonaws.com
+# URL OF Backend Server with Prometheus Node Exporter  Installed 
+ec2-44-204-26-165.compute-1.amazonaws.com
+
+
